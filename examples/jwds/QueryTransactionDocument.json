@@ -1,0 +1,37 @@
+{
+  "payload": {
+    "querier": {
+      "iss": "https://querier.com",
+      "address": "0x6EE805F97d4bbaB975550EA0971DD739379c58b4",
+      "private_key": "a93d54a8510fbec6321f34454a1bd37a0c2d719b346bad7b2ed6e33b860c7932"
+    },
+    "providers": [
+      { "$ref": "https://dp1.com" },
+      { "$ref": "https://dp2.com" },
+      { "$ref": "https://dp2.com" }
+    ],
+    "query": {
+      "$ref": "https://wtf.com/queries/foo",
+      "params": {
+
+      }
+    },
+    "contract": {
+      "$ref": "https://example.com/contracts/h4sh",
+      "params": {
+        "providers": ["0x4b8ab37491614cc1acad5be77b954e91c2d90a44", "0xd4c68fd607707601a597e0758fa2b7059f2cc48d2"]
+      },
+      "txReceipt": "??",
+      "address": "??"
+    }
+  },
+  "signatures": [
+    {
+      "protected": {
+        "alg": "ES256",
+        "jku": "https://example.com/jwks"
+       },
+       "signature": "fdsadfdsaoihfifuhdsahsdaf"
+     }
+  ]
+}

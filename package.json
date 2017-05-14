@@ -1,0 +1,24 @@
+{
+  "name": "opal",
+  "version": "0.0.1",
+  "description": "A module providing a two-way peg binding query and result data to smart contracts and blockchain transactions to OPAL API documents.",
+  "main": "index.js",
+  "license": "MIT",
+  "engines": {
+    "node": ">=4.2.4"
+  },
+  "dependencies": {
+    "crypto-js": "^3.1.9-1",
+    "elliptic": "^6.4.0",
+    "ethereumjs-tx": "^1.2.5",
+    "json-loader": "^0.5.4",
+    "secp256k1": "^3.2.5",
+    "solc-loader": "^1.1.1",
+    "web3": "^0.15.3",
+    "web3-loader": "^1.1.2"
+  },
+  "devDependencies": {
+    "mocha": "3.2.0",
+    "chai": "3.5.0"
+  }
+}
