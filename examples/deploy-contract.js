@@ -16,7 +16,7 @@ crypto.subtle.generateKey(
   )
 
   .then(keyPair => {
-    return new EthereumClient({ keyPair: keyPair})
+    return new EthereumClient({ keyPair: keyPair })
   })
 
   .then(client => {
