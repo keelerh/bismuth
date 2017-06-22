@@ -50,20 +50,6 @@ the withdrawl pattern.
 
 ```
 
-## Running the Example
-
-#### Set up Ethereum environment
-1. `npm install -g ethereumjs-testrpc`
-2. Start a local chain for development: `$ testrpc`
-
-#### Run the package
-
-1. `npm install`
-2. Replace `{$YOUR_PRIVATE_KEY}` in `examples/deploy-contract.js:8` with
-	one of the keys listed under `Private Keys` in the console running the
-	local dev chain
-3. `$ node examples/deploy-contract.js`
-
 ## Tests
 
 To be implemented.

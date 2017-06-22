@@ -1,14 +1,32 @@
-const OPALQuerier = require('../src/')
-const Web3 = require('web3');
+const EthereumClient = require('../src/')
+const crypto = require('@trust/webcrypto')
+const TestRPC = require('ethereumjs-testrpc')
 
-let opal = new OPALQuerier({ provider: 'http://localhost:8545'})
 
+crypto.subtle.generateKey(
 
-let txHash = opal.deployContract('{query_contract_path}', '{private_key}')
+    // use WebCrypto to generate new ECDSA secp256k1 keypair
+    {
+      name: 'ECDSA',
+      namedCurve: 'K-256',
+      hash: { name: 'SHA-256' }
+    },
+    true,
+    ['sign', 'verify']
+  )
+
+  .then(keyPair => {
+    return new EthereumClient({ keyPair: keyPair})
+  })
+
+  .then(client => {
+    return client.deployContract('jwds/ContractIssuanceResponse.json')
+  })
+
   .then(txReceipt => {
     console.log(txReceipt)
     // TODO...
-    //   return opal.issueQuery({
+    //   return client.issueQuery({
     //     querier: {
     //       uri: '...',
     //       address: '...'
@@ -21,4 +39,5 @@ let txHash = opal.deployContract('{query_contract_path}', '{private_key}')
     //   // ...
     // })
   })
-  .catch(console.error);
+
+  .catch(console.error)
