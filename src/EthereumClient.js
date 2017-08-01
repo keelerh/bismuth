@@ -106,15 +106,15 @@ class EthereumClient {
           blockFilter.watch( () => {
             this.web3.eth.getTransactionReceipt(txHash, (err, receipt) => {
               if (err) {
-                reject(err);
+                reject(err)
               }
               if (receipt) {
-                blockFilter.stopWatching();
-                resolve(receipt);
+                blockFilter.stopWatching()
+                resolve(receipt)
               }
-            });
-          });
-        });
+            })
+          })
+        })
       })
 
       .then(receipt => {

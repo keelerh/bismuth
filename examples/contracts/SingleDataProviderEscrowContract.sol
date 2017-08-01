@@ -1,78 +1,70 @@
-pragma solidity ^0.4.9;
+pragma solidity ^0.4.13;
 
 contract SingleDataProviderEscrowContract {
 
-    // State variables
-    address public querier;
-    string public queryURI;
+    address public questioner;
+    string public algorithmURI;
     address public target;
     uint public amount;
-    string public queryResultHash;
+    string public algorithmResultHash;
 
     enum State { Created, Completed, Inactive }
     State public state = State.Created;
 
-    function Query(string _queryURI, address _target, uint _amount)
+    function SingleDataProviderEscrowContract(string _algorithmURI, address _target, uint _amount)
       payable
     {
-        querier = msg.sender;
-        queryURI = _queryURI;
+        questioner = msg.sender;
+        algorithmURI = _algorithmURI;
         target = _target;
         amount = _amount;
     }
 
-    modifier onlyQuerier() {
-        if (msg.sender != querier) throw;
+    modifier onlyQuestioner() {
+        require(msg.sender == questioner);
         _;
     }
 
     modifier onlyTarget() {
-        if (msg.sender != target) throw;
+        require(msg.sender == target);
         _;
     }
 
     modifier inState(State _state) {
-        if (state != _state) throw;
+        require(state == _state);
         _;
     }
 
-    event queryRun(address target);
-    event queryPaymentSent(address from, address to, uint amount);
-    event inactivated();
+    event AlgorithmExecuted(address target, address questioner, string hash);
+    event PaymentDelivered(address from, address to, uint amount);
 
-    /// Called by the specified data provider after
-    // algorithm execution.
-    function confirmQueryRun()
+    function confirmAlgorithmExecuted(string _hash)
         onlyTarget()
         inState(State.Created)
+        public
         returns(bool success)
     {
-        queryRun(msg.sender);
+        algorithmResultHash = _hash;
+        AlgorithmExecuted(msg.sender, questioner, algorithmResultHash);
         state = State.Completed;
         return true;
     }
 
-    /// Uses the withdrawal pattern to allow the
-    /// target data provider to retrieve their payment.
-    // See: http://solidity.readthedocs.io/en/develop/common-patterns.html
     function withdraw()
-        onlyTarget
-        inState(State.Completed)
-        returns(bool success)
+       onlyTarget()
+       inState(State.Completed)
+       public
+       returns(bool success)
     {
-        // The pending payment for the data provider must
-        // be zeroed before sending to prevent re-entrancy
-        // attacks
-        uint payment = amount;
-        amount = 0;
-        if (msg.sender.send(payment)) {
-            queryPaymentSent(querier, msg.sender, amount);
-            state = State.Inactive;
-            return true;
-        } else {
-            amount = payment;
-            return false;
-        }
+       uint payment = amount;
+       amount = 0;
+       if (msg.sender.send(payment)) {
+          PaymentDelivered(questioner, msg.sender, amount);
+          state = State.Inactive;
+          return true;
+       } else {
+          amount = payment;
+          return false;
+       }
     }
-
 }

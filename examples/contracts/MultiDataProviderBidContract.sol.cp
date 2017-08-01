@@ -53,14 +53,13 @@ contract MultiDataProviderBidContract {
         inState(State.Created)
         returns(bool success)
     {
-        assert(msg.value >= _bid);
+        if (msg.value < _bid) throw;
         DataProvider memory target = DataProvider({
             bid: _bid,
             isTarget: true,
             bidAccepted: false,
             bidRejected: false,
             algorithmExecuted: false,
-            resultsUri: "",
             paymentDelivered: false
         });
         targets[_dataProviderAddress] = target;
@@ -74,9 +73,9 @@ contract MultiDataProviderBidContract {
         inState(State.Created)
         returns(bool success)
     {
-        DataProvider storage target = targets[msg.sender];
-        assert(!target.bidAccepted);
-        assert(questioner.send(target.bid));
+        DataProvider target = targets[msg.sender];
+        if (target.bidAccepted) throw;
+        if (!questioner.send(target.bid)) throw;
         targets[msg.sender].bidRejected = true;
         BidRejected(msg.sender, target.bid);
         return true;
@@ -102,7 +101,7 @@ contract MultiDataProviderBidContract {
     }
 
     function lock()
-        onlyQuestioner()
+        onlyQuerier()
         inState(State.Created)
     {
         uint numTargets = 0;
@@ -115,18 +114,18 @@ contract MultiDataProviderBidContract {
         }
         if (numTargets > 0) {
             state = State.Locked;
-            AlgorithmLocked();
+            QueryLocked();
         } else {
             state = State.Inactive;
         }
     }
 
     function cancel()
-        onlyQuestioner
+        onlyQuerier
         inState(State.Created)
     {
         state = State.Inactive;
-        assert(questioner.send(this.balance));
+        if (!querier.send(this.balance)) throw;
     }
 
     function confirmAlgorithmExecuted(string _resultsUri)
@@ -179,11 +178,12 @@ contract MultiDataProviderBidContract {
     }
 
     function withdrawRemainingFunds()
-        onlyQuestioner()
+        onlyQuerier()
         inState(State.Inactive)
         returns(bool success)
     {
-        assert(questioner.send(this.balance));
+        uint amount = targets[msg.sender].bid;
+        if (!querier.send(this.balance)) throw;
         return true;
     }
 
